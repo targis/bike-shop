@@ -90,7 +90,7 @@ const Button = styled.button`
   cursor: pointer;
   width: ${({ width }) => (width ? width : '470px')};
   color: ${({ color }) => (color ? color : '#020106')};
-  background: ${({ color }) => (color ? color : '#e6110c')};
+  background: ${({ background }) => (background ? background : '#e6110c')};
 `
 
 export { Wrapper, Flex, Title, SubTitle, Text, Hr, Button }
