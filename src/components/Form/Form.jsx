@@ -13,6 +13,10 @@ const Form = () => {
   const { size, color, count } = useContext(Context)
   const [selectedTab, setSelectedTab] = useState(0)
 
+  const [submitIsDone, setSubmitIsDone] = useState('')
+
+  const [status, setStatus] = useState()
+
   const [formData, setFormData] = useState({
     name: {
       value: '',
@@ -32,12 +36,61 @@ const Form = () => {
     }
   })
 
+  const [deliveryNumber, setDeliveryNumber] = useState({
+    value: "",
+    error: false
+  })
+
   const onChangeFormData = (key) => (e) => {
     setFormData((prev) => ({ ...prev, [key]: { ...prev[key], value: e.target.value } }))
   }
 
+  const onChangeDelivery = (e) => {
+    setDeliveryNumber((prev) => ({ ...prev, value: e.target.value }))
+  }
 
+  const validateFormData = () => {
+    let obj = { ...formData }
+    Object.keys(obj).forEach(key => obj[key].error = !obj[key].value)
+    setFormData(obj)
 
+    return Object.keys(obj).every(key => !obj[key].error)
+  }
+
+  const onSubmitFormData = (e) => {
+    e.preventDefault()
+    if (validateFormData()) {
+      fetch('http://localhost:3000/bike-request', {
+        method: 'post',
+        headers: {
+          'Content-type': 'application/json; charset: UTF-8'
+        },
+        body: JSON.stringify({
+          name: formData.name.value,
+          data: formData.data.value,
+          email: formData.email.value,
+          phone: formData.phone.value,
+          size,
+          color,
+          count,
+        })
+      }).then(res => res.json()).then(({ id }) => setSubmitIsDone(`Ваш код замовлення ${id}`))
+    }
+  }
+
+  const validateDelivery = () => {
+    setDeliveryNumber(prev => ({ ...prev, error: !prev.value }))
+  }
+
+  const onSubmitDelivery = (e) => {
+    e.preventDefault()
+    if (validateDelivery()) {
+      fetch(`http://localhost:3000/bike-request/${deliveryNumber.value}`)
+        .then(res => {
+          setStatus(deliveryNumber.value ? res.status : '')
+        })
+    }
+  }
 
   return (
     <BorderContainer>
@@ -59,21 +112,66 @@ const Form = () => {
       {selectedTab === 0 && (
         <Flex padding='60px 80px' direction='column'>
           <img src={Checkout} alt="Fuel EX 9.8" />
-          <Title>Fuel EX 9.8</Title>
-          <form>
+          <Title margin="30px 0 100px">Fuel EX 9.8</Title>
+          <form onSubmit={onSubmitFormData}>
             <TextField
               placeholder='ФИО'
-              errorLabel='Пожалуйста, введите ФИО'
+              errorLabel='Пожалуйста, введите ваше ФИО'
               error={formData['name'].error}
               value={formData['name'].value}
               onChange={onChangeFormData('name')}
             />
+
+            <TextField
+              placeholder='E-mail'
+              errorLabel='Пожалуйста, введите ваш E-mail'
+              error={formData['email'].error}
+              value={formData['email'].value}
+              onChange={onChangeFormData('email')}
+            />
+
+            <TextField
+              placeholder='Телефон'
+              errorLabel='Пожалуйста, введите номер телефона'
+              error={formData['phone'].error}
+              value={formData['phone'].value}
+              onChange={onChangeFormData('phone')}
+            />
+
+            <TextField
+              placeholder='Дата доставки'
+              errorLabel='Пожалуйста, укажите дату доставки'
+              error={formData['date'].error}
+              value={formData['date'].value}
+              onChange={onChangeFormData('date')}
+              disabled
+            />
+
+            {submitIsDone || <Button type="submit">Оформити замовлення</Button>}
           </form>
         </Flex>
       )}
 
       {selectedTab === 1 && (
-        <Flex>Tab 2</Flex>
+        <Flex padding="60px 80px" direction="column">
+          <Text margin="30px 0 100px">Введіть номер замовлення, щоб дізнатись його статус</Text>
+          <form onSubmit={onSubmitDelivery}>
+            <TextField
+              placeholder='Номер замовлення'
+              errorLabel='Будь ласка, введіть номер замовлення'
+              error={formData['phone'].error}
+              value={formData['phone'].value}
+              onChange={onChangeDelivery}
+            />
+            <Button type="submit">Отримати інформацію</Button>
+            <p>
+              {({
+                200: 'Замовлення очікує відправку',
+                400: 'Невірний код замовлення',
+              }[status] || '')}
+            </p>
+          </form>
+        </Flex>
       )}
 
     </BorderContainer>
