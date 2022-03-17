@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import { Wrapper, Flex, Title, Text, Hr, Button } from 'components/ui'
 import Carousel from 'components/Carousel'
 import ColorPicker from 'components/ColorPicker'
@@ -50,14 +51,14 @@ const images = [
   Image8
 ]
 
-export default function Product() {
-  return <section>
+export const Product = forwardRef(({ handleOrderScroll }, ref) => (
+  <section>
     <Wrapper>
       <Title withBorder margin='70px 0 30px'>Встречайте нового короля вершин</Title>
       <Text>Fuel EX 9.8 поднимет вашу поездку на новый уровень с пакетом запчастей, который обеспечивает высочайшую производительность.
         Так же иы расширили наш размерный ряд, чтобы обеспечить удобство для всех райдеров. Вы можете выбрать максимальный размер колес, который подойдет для вашей рамы: рамам XS доступны колеса 27,5 дюймов, на рамы S можно выбрать между 27,5 дюймов или 29 дюймов, а размерам от M до XL доступны колеса 29 дюймов.
         Fuel EX 9.8 - отличное вложение для одного велосипеда, который может все. </Text>
-      <Flex gap='30px'>
+      <Flex gap='30px' ref={ref}>
         <Flex flex={1}>
           <Carousel>
             {images.map((image) => (<img src={image} key={image} alt={image} />))}
@@ -86,9 +87,11 @@ export default function Product() {
             </Flex>
           </Flex>
           <CountPicker />
-          <Button>Оформить заказ</Button>
+          <Button onClick={handleOrderScroll}>Оформить заказ</Button>
         </Flex>
       </Flex>
     </Wrapper>
-  </section >;
-}
+  </section >
+))
+
+export default Product

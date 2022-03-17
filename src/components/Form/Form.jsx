@@ -60,14 +60,14 @@ const Form = () => {
   const onSubmitFormData = (e) => {
     e.preventDefault()
     if (validateFormData()) {
-      fetch('http://localhost:3000/bike-request', {
+      fetch('http://localhost:3001/bike-request', {
         method: 'post',
         headers: {
           'Content-type': 'application/json; charset: UTF-8'
         },
         body: JSON.stringify({
           name: formData.name.value,
-          data: formData.data.value,
+          date: formData.date.value,
           email: formData.email.value,
           phone: formData.phone.value,
           size,
@@ -84,12 +84,12 @@ const Form = () => {
 
   const onSubmitDelivery = (e) => {
     e.preventDefault()
-    if (validateDelivery()) {
-      fetch(`http://localhost:3000/bike-request/${deliveryNumber.value}`)
-        .then(res => {
-          setStatus(deliveryNumber.value ? res.status : '')
-        })
-    }
+    // if (validateDelivery()) {
+    fetch(`http://localhost:3001/bike-request/${deliveryNumber.value}`)
+      .then(res => {
+        setStatus(deliveryNumber.value ? res.status : '')
+      })
+    // }
   }
 
   return (
@@ -159,15 +159,15 @@ const Form = () => {
             <TextField
               placeholder='Номер замовлення'
               errorLabel='Будь ласка, введіть номер замовлення'
-              error={formData['phone'].error}
-              value={formData['phone'].value}
+              error={deliveryNumber.error}
+              value={deliveryNumber.value}
               onChange={onChangeDelivery}
             />
             <Button type="submit">Отримати інформацію</Button>
             <p>
               {({
                 200: 'Замовлення очікує відправку',
-                400: 'Невірний код замовлення',
+                404: 'Невірний код замовлення',
               }[status] || '')}
             </p>
           </form>

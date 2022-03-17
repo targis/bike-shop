@@ -1,0 +1,14 @@
+{
+  "bike-request": [
+    {
+      "id":"",
+      "name": "",
+      "data": "",
+      "email": "",
+      "phone": "",
+      "size":"",
+      "color":"",
+      "count":""
+    }
+  ]
+}
